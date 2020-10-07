@@ -3,10 +3,11 @@
 #include <string.h>
 
 #define MISSION_LIMIT 256
+#define MISSION_LENGTH 16
 
 typedef struct orbiter {
     char name[32];
-    char missions[MISSION_LIMIT][16];
+    char missions[MISSION_LIMIT][MISSION_LENGTH];
     int num_missions;
 } orbiter;
 
@@ -17,7 +18,7 @@ orbiter initOrbiter(char name[32]) {
     return new_orbiter;
 }
 
-void addOrbiterMission(orbiter *shuttle, char mission[16]){
+void addOrbiterMission(orbiter *shuttle, char mission[MISSION_LENGTH]){
     if (shuttle->num_missions > MISSION_LIMIT) {
         printf("Error: shuttle has reached mission cap of %d missions.", MISSION_LIMIT);
         return;
@@ -38,13 +39,23 @@ void delOrbiterMission(orbiter *shuttle, int mission){
     shuttle->num_missions = shuttle->num_missions - 1;
 }
 
+int findOrbiterMission(orbiter *shuttle, char mission[MISSION_LENGTH]) {
+    int position = -1;
+    for (int i = 0; i < shuttle->num_missions; i++) {
+        if (strcmp(mission, shuttle->missions[i]) == 0) {
+            position = i;
+            break;
+        }
+    }
+    return position;
+}
+
 int main () {
     orbiter shuttle = initOrbiter("Enterprise");
     addOrbiterMission(&shuttle, "STS-6");
     addOrbiterMission(&shuttle, "STS-7");
     addOrbiterMission(&shuttle, "STS-8");
-    delOrbiterMission(&shuttle, 0);
-    delOrbiterMission(&shuttle, 1);
+    int test = findOrbiterMission(&shuttle, "STS-9");
 
     return 0;  
 }
