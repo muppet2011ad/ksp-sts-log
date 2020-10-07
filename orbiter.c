@@ -1,15 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "orbiter.h"
 
 #define MISSION_LIMIT 256
 #define MISSION_LENGTH 16
-
-typedef struct orbiter {
-    char name[32];
-    char missions[MISSION_LIMIT][MISSION_LENGTH];
-    int num_missions;
-} orbiter;
 
 orbiter initOrbiter(char name[32]) {
     orbiter new_orbiter;
@@ -48,14 +43,4 @@ int findOrbiterMission(orbiter *shuttle, char mission[MISSION_LENGTH]) {
         }
     }
     return position;
-}
-
-int main () {
-    orbiter shuttle = initOrbiter("Enterprise");
-    addOrbiterMission(&shuttle, "STS-6");
-    addOrbiterMission(&shuttle, "STS-7");
-    addOrbiterMission(&shuttle, "STS-8");
-    int test = findOrbiterMission(&shuttle, "STS-9");
-
-    return 0;  
 }
