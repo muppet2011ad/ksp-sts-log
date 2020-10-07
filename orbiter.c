@@ -3,10 +3,7 @@
 #include <string.h>
 #include "orbiter.h"
 
-#define MISSION_LIMIT 256
-#define MISSION_LENGTH 16
-
-orbiter initOrbiter(char name[32]) {
+orbiter initOrbiter(char name[ORBITER_NAME_LENGTH]) {
     orbiter new_orbiter;
     strcpy(new_orbiter.name, name);
     new_orbiter.num_missions = 0;
@@ -43,4 +40,22 @@ int findOrbiterMission(orbiter *shuttle, char mission[MISSION_LENGTH]) {
         }
     }
     return position;
+}
+
+orbiter findOrbiter(char name[], orbiter orbiters[], int size) {
+    for (int i = 0; i < size; i++) {
+        if (strcmp(name, orbiters[i].name) == 0) {
+            return orbiters[i];
+        }
+    }
+    return initOrbiter("\0");
+}
+
+int isOrbiterNull(orbiter shuttle) {
+    if (strcmp(shuttle.name, "\0") == 0){
+        return 1;
+    }
+    else {
+        return 0;
+    }
 }
