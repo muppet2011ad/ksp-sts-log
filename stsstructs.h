@@ -2,8 +2,8 @@
 
 #define STSSTRUCTS_H
 
-#define MISSION_LIMIT 256
-#define MISSION_LENGTH 16
+#define ORBITER_MISSION_LIMIT 256
+#define MISSION_NAME_LENGTH 16
 #define ORBITER_NAME_LENGTH 16
 
 typedef struct mission mission;
@@ -12,7 +12,7 @@ typedef struct kerbal kerbal;
 
 typedef struct orbiter {
     char name[ORBITER_NAME_LENGTH];
-    mission *missions[MISSION_LIMIT];
+    mission *missions[ORBITER_MISSION_LIMIT];
     int num_missions;
 } orbiter;
 
@@ -23,7 +23,7 @@ typedef struct orbiter {
 #define MAX_CREW_SIZE 16
 
 typedef struct mission {
-    char name[MISSION_LENGTH];
+    char name[MISSION_NAME_LENGTH];
     orbiter *orbiter;
     char purpose[MISSION_PURPOSE_LENGTH];
     char payload[MISSION_PAYLOAD_LENGTH];

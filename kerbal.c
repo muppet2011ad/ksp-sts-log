@@ -31,7 +31,7 @@ void delKerbalMission(kerbal *kerbal, int mission) {
     kerbal->num_missions = kerbal->num_missions - 1;
 }
 
-int findKerbalMission(kerbal *kerbal, char mission[MISSION_LENGTH]) {
+int findKerbalMission(kerbal *kerbal, char mission[MISSION_NAME_LENGTH]) {
     int position = -1;
     for (int i = 0; i < kerbal->num_missions; i++) {
         if (strcmp(mission, kerbal->missions[i]->name) == 0) {

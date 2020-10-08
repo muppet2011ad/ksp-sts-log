@@ -11,8 +11,8 @@ orbiter initOrbiter(char name[ORBITER_NAME_LENGTH]) { // Function to initialise 
 }
 
 void addOrbiterMission(orbiter *shuttle, mission *mission){ // Adds a mission to the shuttle from its pointer
-    if (shuttle->num_missions > MISSION_LIMIT) {
-        printf("Error: shuttle has reached mission cap of %d missions.", MISSION_LIMIT);
+    if (shuttle->num_missions > ORBITER_MISSION_LIMIT) {
+        printf("Error: shuttle has reached mission cap of %d missions.", ORBITER_MISSION_LIMIT);
         return;
     }
     shuttle->missions[shuttle->num_missions] = mission;
@@ -31,7 +31,7 @@ void delOrbiterMission(orbiter *shuttle, int mission){ // Deletes a mission base
     shuttle->num_missions = shuttle->num_missions - 1;
 }
 
-int findOrbiterMission(orbiter *shuttle, char mission[MISSION_LENGTH]) { // Searches for a mission in an orbiter based on its name
+int findOrbiterMission(orbiter *shuttle, char mission[MISSION_NAME_LENGTH]) { // Searches for a mission in an orbiter based on its name
     int position = -1;
     for (int i = 0; i < shuttle->num_missions; i++) {
         if (strcmp(mission, shuttle->missions[i]->name) == 0) {
