@@ -10,12 +10,12 @@ kerbal initKerbal(char name[KERBAL_NAME_LENGTH]) {
     return new_kerbal;
 }
 
-void addKerbalMission(kerbal *kerbal, char mission[MISSION_LENGTH]) {
+void addKerbalMission(kerbal *kerbal, mission *mission) {
     if (kerbal->num_missions > KERBAL_MISSION_LIMIT) {
         printf("Error: kerbal has reached mission cap of %d missions.", KERBAL_MISSION_LIMIT);
         return;
     }
-    strcpy(kerbal->missions[kerbal->num_missions], mission);
+    kerbal->missions[kerbal->num_missions] = mission;
     kerbal->num_missions = kerbal->num_missions + 1;
 }
 
@@ -24,7 +24,7 @@ void delKerbalMission(kerbal *kerbal, int mission) {
         printf("Error: attempting to delete non-existent mission");
         return;
     }
-    kerbal->missions[mission][0] = '\0';
+    kerbal->missions[mission] = NULL;
     for (int i = mission; i < kerbal->num_missions-1; i++) {
         strcpy(kerbal->missions[i], kerbal->missions[i+1]);
     }
@@ -42,13 +42,13 @@ int findKerbalMission(kerbal *kerbal, char mission[MISSION_LENGTH]) {
     return position;
 }
 
-kerbal findKerbal(char name[], kerbal kerbals[], int size) {
+kerbal* findKerbal(char name[], kerbal kerbals[], int size) {
     for (int i = 0; i < size; i++) {
         if (strcmp(name, kerbals[i].name) == 0) {
-            return kerbals[i];
+            return &kerbals[i];
         }
     }
-    return initKerbal("\0");
+    return NULL;
 }
 
 int isKerbalNull(kerbal kerbal) {
