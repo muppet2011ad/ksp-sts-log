@@ -9,6 +9,7 @@ void addKerbalMission(kerbal*, mission*);
 void delKerbalMission(kerbal*, int);
 int findKerbalMission(kerbal*, char[]);
 kerbal* findKerbal(char[], kerbal[], int);
+int isKerbalInList(kerbal*, kerbal*[], int);
 int isKerbalNull(kerbal);
 
 #endif

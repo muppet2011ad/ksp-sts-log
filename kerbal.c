@@ -26,7 +26,7 @@ void delKerbalMission(kerbal *kerbal, int mission) {
     }
     kerbal->missions[mission] = NULL;
     for (int i = mission; i < kerbal->num_missions-1; i++) {
-        strcpy(kerbal->missions[i], kerbal->missions[i+1]);
+        kerbal->missions[i] = kerbal->missions[i+1];
     }
     kerbal->num_missions = kerbal->num_missions - 1;
 }
@@ -34,7 +34,7 @@ void delKerbalMission(kerbal *kerbal, int mission) {
 int findKerbalMission(kerbal *kerbal, char mission[MISSION_LENGTH]) {
     int position = -1;
     for (int i = 0; i < kerbal->num_missions; i++) {
-        if (strcmp(mission, kerbal->missions[i]) == 0) {
+        if (strcmp(mission, kerbal->missions[i]->name) == 0) {
             position = i;
             break;
         }
@@ -49,6 +49,15 @@ kerbal* findKerbal(char name[], kerbal kerbals[], int size) {
         }
     }
     return NULL;
+}
+
+int isKerbalInList(kerbal *kerb, kerbal *kerbals[], int size) {
+    for (int i = 0; i < size; i++) {
+        if (kerb == kerbals[i]) {
+            return 1;
+        }
+    }
+    return 0;
 }
 
 int isKerbalNull(kerbal kerbal) {

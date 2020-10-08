@@ -2,7 +2,6 @@
 
 #define STSSTRUCTS_H
 
-#define ORBITER_H
 #define MISSION_LIMIT 256
 #define MISSION_LENGTH 16
 #define ORBITER_NAME_LENGTH 16
@@ -17,7 +16,6 @@ typedef struct orbiter {
     int num_missions;
 } orbiter;
 
-#define MISSION_H
 #define MISSION_PURPOSE_LENGTH 64
 #define DATE_LENGTH 8
 #define SITE_LENGTH 16
@@ -34,6 +32,8 @@ typedef struct mission {
     char landing_date[DATE_LENGTH];
     char landing_site[SITE_LENGTH];
     int change_crew;
+    int launch_size;
+    int landing_size;
     kerbal *launch_commander;
     kerbal *launch_crew[MAX_CREW_SIZE];
     kerbal *landing_commander;
