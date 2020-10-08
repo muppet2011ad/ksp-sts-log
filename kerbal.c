@@ -20,7 +20,7 @@ void addKerbalMission(kerbal *kerbal, mission *mission) {
 }
 
 void delKerbalMission(kerbal *kerbal, int mission) {
-    if (mission >= kerbal ->num_missions) {
+    if (mission >= kerbal->num_missions) {
         printf("Error: attempting to delete non-existent mission");
         return;
     }
