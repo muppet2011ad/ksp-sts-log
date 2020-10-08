@@ -31,20 +31,20 @@ mission initMission(char name[MISSION_LENGTH], orbiter *orbiter, char purpose[MI
     return new_mission;
 }
 
-void pairMission(mission *mission) {
+void pairMission(mission *mission) { // Function to pair mission with its orbiter and crew. Can't be done with initMission because the pointer changes on return
     addOrbiterMission(mission->orbiter, mission);
-    addKerbalMission(mission->launch_commander, mission);
-    for (int i = 0; i < mission->launch_size; i++) {
-        if (mission->launch_crew[i] == NULL) { continue; }
+    addKerbalMission(mission->launch_commander, mission); // Pairs up the mission commander
+    for (int i = 0; i < mission->launch_size; i++) { // Iterate through the crew
+        if (mission->launch_crew[i] == NULL) { continue; } // Double check for NULL pointer so we don't segfault
         addKerbalMission(mission->launch_crew[i], mission);
     }
-    if (mission->change_crew != 0) {
+    if (mission->change_crew != 0) { // This section is almost the same as before
         if (mission->launch_commander != mission->landing_commander) {
             addKerbalMission(mission->landing_commander, mission);
         }
         for (int i = 0; i < mission->landing_size; i++) {
             if (mission->landing_crew[i] == NULL) { continue; }
-            if (isKerbalInList(mission->landing_crew[i], mission->launch_crew, mission->launch_size) == 0) {
+            if (isKerbalInList(mission->landing_crew[i], mission->launch_crew, mission->launch_size) == 0) { // Don't double count kerbals that are present on the way up and the way down
                 addKerbalMission(mission->landing_crew[i], mission);
             }
         }
