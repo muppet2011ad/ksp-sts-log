@@ -59,3 +59,23 @@ int isOrbiterNull(orbiter shuttle) {
         return 0;
     }
 }
+
+void addOrbiter(orbiter *orbiters[], orbiter new_orbiter, int *next_free, int *max_size) { // Adds a new orbiter to a dynamically-allocated array of orbiters. First two params are hopefully obvious. Third is the index of the next available space. Fourth is the current size of the array.
+    if (*next_free >= *max_size) { // If we need to extend the array
+        orbiter *tempalloc = realloc(*orbiters, sizeof(orbiter)*(*max_size+5)); // Realloc memory to extend the array
+        if (tempalloc != NULL) { // If the realloc was successful
+            tempalloc[*next_free] = new_orbiter; // Add the new orbiter to the array
+            *next_free = *next_free + 1;
+            *max_size = *max_size + 5; // Update all the counters accordingly
+            *orbiters = tempalloc; // Replace the original orbiters pointer
+        }
+        else { // If the realloc was not successful
+            printf("\nError: failed to allocate new memory.\n"); // Output that there was a problem
+            return; // Get out of the function
+        }
+    }
+    else { // If we don't need to do anything memory-wise
+        *orbiters[*next_free] = new_orbiter; // Just add on the new orbiter
+        *next_free = *next_free + 1; // Increment the relevant counter
+    }
+}
