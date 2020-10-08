@@ -42,10 +42,10 @@ int findOrbiterMission(orbiter *shuttle, char mission[MISSION_NAME_LENGTH]) { //
     return position;
 }
 
-orbiter* findOrbiter(char name[], orbiter orbiters[], int size) { // Finds an orbiter within a list of orbiters based on name - requires the size of the list to be sent with it
+orbiter* findOrbiter(char name[], orbiter *orbiters[], int size) { // Finds an orbiter within a list of orbiters based on name - requires the size of the list to be sent with it
     for (int i = 0; i < size; i++) {
-        if (strcmp(name, orbiters[i].name) == 0) {
-            return &orbiters[i];
+        if (strcmp(name, orbiters[i]->name) == 0) {
+            return orbiters[i];
         }
     }
     return NULL;
@@ -78,4 +78,19 @@ void addOrbiter(orbiter *orbiters[], orbiter new_orbiter, int *next_free, int *m
         *orbiters[*next_free] = new_orbiter; // Just add on the new orbiter
         *next_free = *next_free + 1; // Increment the relevant counter
     }
+}
+
+void delOrbiter(orbiter orbiters[], orbiter *orbiter, int *next_free) {
+    int position = -1;
+    for (int i = 0; i < *next_free; i++) {
+        if (&orbiters[i] == orbiter) {
+            position = i;
+            break;
+        }
+    }
+    if (position == -1) { printf ("\nError: attempting to delete non-existent orbiter\n"); return; }
+    for (int i = position; i < *next_free; i++) {
+        orbiters[i] = orbiters[i+1];
+    }
+    *next_free = *next_free - 1;
 }

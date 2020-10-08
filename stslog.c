@@ -12,6 +12,7 @@ int main () {
     int max_size = 1;
     addOrbiter(&orbiters, initOrbiter("Enterprise"), &next_free_orbiter, &max_size);
     addOrbiter(&orbiters, initOrbiter("Columbia"), &next_free_orbiter, &max_size);
+    delOrbiter(orbiters, findOrbiter("Enterprise", &orbiters, next_free_orbiter), &next_free_orbiter);
     
     kerbal kerbals[8];
     kerbals[0] = initKerbal("Jeb");
