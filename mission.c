@@ -50,3 +50,38 @@ void pairMission(mission *mission) { // Function to pair mission with its orbite
         }
     }
 }
+
+void addMission(mission *missions[], mission new_mission, int *next_free, int *max_size) { // Adds a new mission to a dynamically-allocated array of missions. First two params are hopefully obvious. Third is the index of the next available space. Fourth is the current size of the array.
+    if (*next_free >= *max_size) { // If we need to extend the array
+        mission *tempalloc = realloc(*missions, sizeof(mission)*(*max_size+5)); // Realloc memory to extend the array
+        if (tempalloc != NULL) { // If the realloc was successful
+            tempalloc[*next_free] = new_mission; // Add the new mission to the array
+            *next_free = *next_free + 1;
+            *max_size = *max_size + 5; // Update all the counters accordingly
+            *missions = tempalloc; // Replace the original missions pointer
+        }
+        else { // If the realloc was not successful
+            printf("\nError: failed to allocate new memory.\n"); // Output that there was a problem
+            return; // Get out of the function
+        }
+    }
+    else { // If we don't need to do anything memory-wise
+        *missions[*next_free] = new_mission; // Just add on the new mission
+        *next_free = *next_free + 1; // Increment the relevant counter
+    }
+}
+
+void delMission(mission missions[], mission *mission, int *next_free) {
+    int position = -1;
+    for (int i = 0; i < *next_free; i++) {
+        if (&missions[i] == mission) {
+            position = i;
+            break;
+        }
+    }
+    if (position == -1) { printf ("\nError: attempting to delete non-existent mission\n"); return; }
+    for (int i = position; i < *next_free; i++) {
+        missions[i] = missions[i+1];
+    }
+    *next_free = *next_free - 1;
+}
