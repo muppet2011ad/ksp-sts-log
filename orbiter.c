@@ -80,10 +80,10 @@ void addOrbiter(orbiter *orbiters[], orbiter new_orbiter, int *next_free, int *m
     }
 }
 
-void delOrbiter(orbiter orbiters[], orbiter *orbiter, int *next_free) {
+void delOrbiter(orbiter *orbiters[], orbiter *orbiter, int *next_free) {
     int position = -1;
     for (int i = 0; i < *next_free; i++) {
-        if (&orbiters[i] == orbiter) {
+        if (orbiters[i] == orbiter) {
             position = i;
             break;
         }

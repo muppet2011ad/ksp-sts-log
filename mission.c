@@ -71,10 +71,10 @@ void addMission(mission *missions[], mission new_mission, int *next_free, int *m
     }
 }
 
-void delMission(mission missions[], mission *mission, int *next_free) {
+void delMission(mission *missions[], mission *mission, int *next_free) {
     int position = -1;
     for (int i = 0; i < *next_free; i++) {
-        if (&missions[i] == mission) {
+        if (missions[i] == mission) {
             position = i;
             break;
         }

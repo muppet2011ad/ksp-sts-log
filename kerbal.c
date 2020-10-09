@@ -80,10 +80,10 @@ void addKerbal(kerbal *kerbals[], kerbal new_kerbal, int *next_free, int *max_si
     }
 }
 
-void delKerbal(kerbal kerbals[], kerbal *kerbal, int *next_free) {
+void delKerbal(kerbal *kerbals[], kerbal *kerbal, int *next_free) {
     int position = -1;
     for (int i = 0; i < *next_free; i++) {
-        if (&kerbals[i] == kerbal) {
+        if (kerbals[i] == kerbal) {
             position = i;
             break;
         }
