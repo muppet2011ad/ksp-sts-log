@@ -75,7 +75,8 @@ void addKerbal(kerbal *kerbals[], kerbal new_kerbal, int *next_free, int *max_si
         }
     }
     else { // If we don't need to do anything memory-wise
-        *kerbals[*next_free] = new_kerbal; // Just add on the new kerbal
+        kerbal *temp = *kerbals;
+        temp[*next_free] = new_kerbal; // Just add on the new kerbal
         *next_free = *next_free + 1; // Increment the relevant counter
     }
 }

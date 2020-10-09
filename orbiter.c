@@ -75,7 +75,8 @@ void addOrbiter(orbiter *orbiters[], orbiter new_orbiter, int *next_free, int *m
         }
     }
     else { // If we don't need to do anything memory-wise
-        *orbiters[*next_free] = new_orbiter; // Just add on the new orbiter
+        orbiter *temp = *orbiters;
+        temp[*next_free] = new_orbiter;
         *next_free = *next_free + 1; // Increment the relevant counter
     }
 }

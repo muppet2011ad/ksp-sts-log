@@ -66,7 +66,8 @@ void addMission(mission *missions[], mission new_mission, int *next_free, int *m
         }
     }
     else { // If we don't need to do anything memory-wise
-        *missions[*next_free] = new_mission; // Just add on the new mission
+        mission *temp = *missions;
+        temp[*next_free] = new_mission; // Just add on the new mission
         *next_free = *next_free + 1; // Increment the relevant counter
     }
 }
