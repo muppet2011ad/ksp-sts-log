@@ -66,8 +66,18 @@ void viewMissions(mission *missions[], int *next_free) {
 
 void input(char *string,int length) {
     fgets(string,length,stdin);
-    while(*string != '\n')
-        string++;
+    int i = 0;
+    while(*string != '\n') {
+        i++;
+        if (i == length) {
+            *string = '\n';
+            int ch;
+            while ((ch = getchar()) != '\n' && ch != EOF);
+        }
+        else {
+            string++;
+        }
+    }
     *string = '\0';
 }
 
