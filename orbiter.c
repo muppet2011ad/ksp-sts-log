@@ -44,8 +44,8 @@ int findOrbiterMission(orbiter *shuttle, char mission[MISSION_NAME_LENGTH]) { //
 
 orbiter* findOrbiter(char name[], orbiter *orbiters[], int size) { // Finds an orbiter within a list of orbiters based on name - requires the size of the list to be sent with it
     for (int i = 0; i < size; i++) {
-        if (strcmp(name, orbiters[i]->name) == 0) {
-            return orbiters[i];
+        if (strcmp(name, (*orbiters)[i].name) == 0) {
+            return &(*orbiters)[i];
         }
     }
     return NULL;
