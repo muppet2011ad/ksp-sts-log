@@ -77,23 +77,35 @@ int getKerbalFlights(kerbal *kerbal) {
 
 int getKerbalFlightsAtMission(kerbal *kerbal, mission *mission) {
     int limit = findKerbalMissionFromPtr(kerbal, mission);
-    int launches = 0;
-    int landings = 0;
+    int flights = 0;
+    int in_space = 0;
     for (int i = 0; i <= limit; i++) {
         if (kerbal->missions[i]->launch_commander == kerbal) {
-            launches++;
+            flights++;
+            in_space = 1;
         }
         else if (kerbal->missions[i]->landing_commander == kerbal) {
-            landings--;
+            if (in_space == 1) {
+                in_space = 0;
+            }
+            else {
+                flights++;
+            }
         }
         else if (isKerbalInList(kerbal, kerbal->missions[i]->launch_crew, kerbal->missions[i]->launch_size) == 1) {
-            launches++;
+            flights++;
+            in_space = 1;
         }
         else if (isKerbalInList(kerbal, kerbal->missions[i]->landing_crew, kerbal->missions[i]->landing_size) == 1) {
-            landings--;
+            if (in_space == 1) {
+                in_space = 0;
+            }
+            else {
+                flights++;
+            }
         }
     }
-    return MAX(launches, landings);
+    return flights;
 }
 
 kerbal* findKerbal(char name[], kerbal kerbals[], int size) {
@@ -107,7 +119,7 @@ kerbal* findKerbal(char name[], kerbal kerbals[], int size) {
 
 int isKerbalInList(kerbal *kerb, kerbal *kerbals[], int size) {
     for (int i = 0; i < size; i++) {
-        if (kerb == kerbals[i]) {
+        if (kerb == &(*kerbals)[i]) {
             return 1;
         }
     }
