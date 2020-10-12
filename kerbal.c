@@ -119,7 +119,7 @@ kerbal* findKerbal(char name[], kerbal kerbals[], int size) {
 
 int isKerbalInList(kerbal *kerb, kerbal *kerbals[], int size) {
     for (int i = 0; i < size; i++) {
-        if (kerb == &(*kerbals)[i]) {
+        if (kerb == kerbals[i]) {
             return 1;
         }
     }
