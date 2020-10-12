@@ -21,6 +21,7 @@ typedef struct orbiter {
 #define SITE_LENGTH 16
 #define MISSION_PAYLOAD_LENGTH 64
 #define MAX_CREW_SIZE 16
+#define MISSION_NOTES_LENGTH 512
 
 typedef struct mission {
     char name[MISSION_NAME_LENGTH];
@@ -38,6 +39,7 @@ typedef struct mission {
     kerbal *launch_crew[MAX_CREW_SIZE];
     kerbal *landing_commander;
     kerbal *landing_crew[MAX_CREW_SIZE];
+    char notes[MISSION_NOTES_LENGTH];
 } mission;
 
 #define KERBAL_MISSION_LIMIT 32
