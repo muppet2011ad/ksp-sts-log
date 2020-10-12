@@ -13,5 +13,7 @@ int isKerbalInList(kerbal*, kerbal*[], int);
 void addKerbal(kerbal *kerbals[], kerbal new_kerbal, int *next_free, int *max_size);
 void delKerbal(kerbal *kerbals[], kerbal *kerbal, int *next_free);
 int getKerbalFlights(kerbal *kerbal);
+int getKerbalFlightsAtMission(kerbal *kerbal, mission *mission);
+int findKerbalMissionFromPtr(kerbal *kerbal, mission *mission);
 
 #endif
