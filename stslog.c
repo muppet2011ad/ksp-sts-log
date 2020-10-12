@@ -6,6 +6,9 @@
 #include "kerbal.h"
 #include "mission.h"
 
+void input(char *string,int length);
+void viewMissions(mission *missions[], int *next_free);
+
 int main () {
     orbiter *orbiters = (orbiter *) calloc(5, sizeof(orbiter));
     int next_free_orbiter = 0;
@@ -33,4 +36,36 @@ int main () {
     pairMission(&missions[0]);
 
     printf("Size of orbiter: %d bytes\nSize of mission: %d bytes\nSize of kerbal: %d bytes\n", sizeof(orbiter), sizeof(mission), sizeof(kerbal));
+
+    int option = -1;
+    printf("\nWelcome to the STS log program.\n");
+    while (option != 0) {
+        printf("\nOptions:\n0. Exit\n1. View Missions\n2. Add Mission\n3. Edit Mission\n4. Delete Mission\n5. View Kerbals\n6. View Orbiters\n\nEnter Option: ");
+        char raw_option[8];
+        input(raw_option, 8);
+        sscanf(raw_option, "%d", &option);
+        printf("\n");
+        switch (option) {
+            case 1:
+                viewMissions(&missions, &next_free_mission);
+                break;
+        }
+    }
+
+    return 0;
+}
+
+void viewMissions(mission *missions[], int *next_free) {
+    printf("Missions:\n");
+    printf("     | %-*s | %-*s | %-*s | %-*s\n", MISSION_NAME_LENGTH, "Mission", DATE_LENGTH, "Launch", DATE_LENGTH, "Landing", MISSION_PURPOSE_LENGTH, "Purpose");
+    for (int i = 0; i < *next_free; i++) {
+        printf("%3d. | %-*s | %-*s | %-*s | %-*s\n", i, MISSION_NAME_LENGTH, missions[i]->name, DATE_LENGTH, missions[i]->launch_date, DATE_LENGTH, missions[i]->landing_date, MISSION_PURPOSE_LENGTH, missions[i]->purpose);
+    }
+}
+
+void input(char *string,int length) {
+    fgets(string,length,stdin);
+    while(*string != '\n')
+        string++;
+    *string = '\0';
 }
