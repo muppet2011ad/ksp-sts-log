@@ -8,6 +8,7 @@
 
 void input(char *string,int length);
 void viewMissions(mission *missions[], int *next_free);
+const char* getSuffix(int i);
 
 int main () {
     orbiter *orbiters = (orbiter *) calloc(5, sizeof(orbiter));
@@ -68,4 +69,22 @@ void input(char *string,int length) {
     while(*string != '\n')
         string++;
     *string = '\0';
+}
+
+const char* getSuffix(int i) {
+    char strI[256];
+    sprintf(strI, "%d", i);
+    int digits = strlen(strI);
+    if (strI[digits-1] - '0' > 3 || strI[digits-2] - '0' == 1) {
+        return "th";
+    }
+    else if (strI[digits-1] - '0' == 3) {
+        return "rd";
+    }
+    else if (strI[digits-1] - '0' == 2) {
+        return "nd";
+    }
+    else {
+        return "st";
+    }
 }
