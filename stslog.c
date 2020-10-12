@@ -149,7 +149,7 @@ const char* getOrdinal(int i) {
     char strI[256];
     sprintf(strI, "%d", i);
     int digits = strlen(strI);
-    if (strI[digits-1] - '0' > 3 || strI[digits-2] - '0' == 1) {
+    if (strI[digits-1] - '0' > 3 || strI[digits-2] - '0' == 1 || strI[digits-1] == 0) {
         return "th";
     }
     else if (strI[digits-1] - '0' == 3) {
