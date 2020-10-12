@@ -3,6 +3,8 @@
 #include <string.h>
 #include "kerbal.h"
 
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+
 kerbal initKerbal(char name[KERBAL_NAME_LENGTH]) {
     kerbal new_kerbal;
     strcpy(new_kerbal.name, name);
@@ -40,6 +42,26 @@ int findKerbalMission(kerbal *kerbal, char mission[MISSION_NAME_LENGTH]) {
         }
     }
     return position;
+}
+
+int getKerbalFlights(kerbal *kerbal) {
+    int launches = 0;
+    int landings = 0;
+    for (int i = 0; i < kerbal->num_missions; i++) {
+        if (kerbal->missions[i]->launch_commander == kerbal) {
+            launches++;
+        }
+        else if (kerbal->missions[i]->landing_commander == kerbal) {
+            landings--;
+        }
+        else if (isKerbalInList(kerbal, kerbal->missions[i]->launch_crew, kerbal->missions[i]->launch_size) == 1) {
+            launches++;
+        }
+        else if (isKerbalInList(kerbal, kerbal->missions[i]->landing_crew, kerbal->missions[i]->landing_size) == 1) {
+            landings--;
+        }
+    }
+    return MAX(launches, landings);
 }
 
 kerbal* findKerbal(char name[], kerbal kerbals[], int size) {
