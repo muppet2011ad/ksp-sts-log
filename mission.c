@@ -73,7 +73,7 @@ void addMission(mission *missions[], mission new_mission, int *next_free, int *m
     }
 }
 
-void delMission(mission *missions[], mission *mission, int *next_free) {
+void delMission(mission *missions[], mission *mission, int *next_free) { //TODO: Update references for orbiter and kerbals
     int position = -1;
     for (int i = 0; i < *next_free; i++) {
         if (missions[i] == mission) {
@@ -83,7 +83,7 @@ void delMission(mission *missions[], mission *mission, int *next_free) {
     }
     if (position == -1) { printf ("\nError: attempting to delete non-existent mission\n"); return; }
     for (int i = position; i < *next_free; i++) {
-        missions[i] = missions[i+1];
+        (*missions)[i] = (*missions)[i+1];
     }
     *next_free = *next_free - 1;
 }
