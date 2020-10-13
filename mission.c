@@ -87,3 +87,63 @@ void delMission(mission *missions[], mission *mission, int *next_free) {
     }
     *next_free = *next_free - 1;
 }
+
+int isDateValid(char date[DATE_LENGTH]) {
+    char date_cpy[DATE_LENGTH];
+    strcpy(date_cpy, date);
+    int length = strlen(date_cpy);
+    int has_slash = 0;
+    for (int i = 0; i < length; i++) {
+        if (date_cpy[i] >= '0' && date_cpy[i] <= '9') {
+            continue;
+        }
+        else if (has_slash == 0 && date_cpy[i] == '/') {
+            has_slash = 1;
+        }
+        else {
+            return 0;
+        }
+    }
+    const char delim[2] = "/";
+    int days = atoi(strtok(date_cpy, delim));
+    if (days > DAYS_IN_YEAR || days < 1) {
+        return 0;
+    }
+    int years = atoi(strtok(NULL, delim));
+    if (years < 1) {
+        return 0;
+    }
+    return 1;
+}
+
+double dateToDouble(char date[DATE_LENGTH]) {
+    char date_cpy[DATE_LENGTH];
+    strcpy(date_cpy, date);
+    if (isDateValid(date_cpy) == 0) { 
+        return -1;
+    }
+    char *ch_days;
+    char *ch_years;
+    const char delim[2] = "/";
+    ch_days = strtok(date_cpy, delim);
+    ch_years = strtok(NULL, delim);
+    double days = atof(ch_days);
+    double years = atof(ch_years);
+    return years + days/DAYS_IN_YEAR;
+}
+
+int compareDates(char date1[DATE_LENGTH], char date2[DATE_LENGTH]) { // Returns 1 if date1>date2, 0 if date1==date2 and -1 if date1<date2
+    if (isDateValid(date1) == 0 || isDateValid(date2) == 0) {
+        printf("\nDate comparison error - at least one date is invalid\n");
+        return 0;
+    }
+    if (dateToDouble(date1) > dateToDouble(date2)) {
+        return 1;
+    }
+    else if (dateToDouble(date1) == dateToDouble(date2)) {
+        return 0;
+    }
+    else {
+        return -1;
+    }
+}

@@ -18,6 +18,7 @@ typedef struct orbiter {
 
 #define MISSION_PURPOSE_LENGTH 64
 #define DATE_LENGTH 8
+#define DAYS_IN_YEAR 426
 #define SITE_LENGTH 16
 #define MISSION_PAYLOAD_LENGTH 64
 #define MAX_CREW_SIZE 16

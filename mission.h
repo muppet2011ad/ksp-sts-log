@@ -7,5 +7,8 @@ mission initMission(char name[MISSION_NAME_LENGTH], orbiter *orbiter, char purpo
 void pairMission(mission *mission);
 void addMission(mission *missions[], mission new_mission, int *next_free, int *max_size);
 void delMission(mission *missions[], mission *mission, int *next_free);
+int isDateValid(char date[DATE_LENGTH]);
+double dateToDouble(char date[DATE_LENGTH]);
+int compareDates(char date1[DATE_LENGTH], char date2[DATE_LENGTH]);
 
 #endif
