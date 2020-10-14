@@ -34,16 +34,11 @@ int main () {
     kerbal *launch_crew_2[MAX_CREW_SIZE] = {findKerbal("Bill", kerbals, next_free_kerbal), findKerbal("Val", kerbals, next_free_kerbal)};
     kerbal *landing_crew_2[MAX_CREW_SIZE] = {findKerbal("Bill", kerbals, next_free_kerbal)};
     addMission(&missions, initMission("STS-2", findOrbiter("Odyssey", &orbiters, next_free_orbiter), "Space Station Construction", "Skylab", "06/02", "KSC Pad 1", "15/02", "KSC Runway", 1, 2, findKerbal("Jeb", kerbals, next_free_kerbal), launch_crew_2, 1, findKerbal("Jeb", kerbals, next_free_kerbal), landing_crew_2, ""), &next_free_mission, &max_size_mission);
-    pairMission(missions[0]);
     kerbal *launch_crew_3[MAX_CREW_SIZE] = {findKerbal("Heidi", kerbals, next_free_kerbal), findKerbal("Ronton", kerbals, next_free_kerbal)};
     kerbal *landing_crew_3[MAX_CREW_SIZE] = {findKerbal("Ronton", kerbals, next_free_kerbal), findKerbal("Val", kerbals, next_free_kerbal)};
     addMission(&missions, initMission("STS-3", findOrbiter("Enterprise", &orbiters, next_free_orbiter), "Space Station Rotation", "MPLM Donatello", "06/03", "KSC Pad 1", "15/03", "KSC Runway", 1, 2, findKerbal("Jeb", kerbals, next_free_kerbal), launch_crew_3, 2, findKerbal("Jeb", kerbals, next_free_kerbal), landing_crew_3, ""), &next_free_mission, &max_size_mission);
-    pairMission(missions[1]);
     kerbal *launch_crew[MAX_CREW_SIZE] = {findKerbal("Bill", kerbals, next_free_kerbal), findKerbal("Bob", kerbals, next_free_kerbal), findKerbal("Val", kerbals, next_free_kerbal)};
-    kerbal *land_crew[MAX_CREW_SIZE] = {findKerbal("Ronton", kerbals, next_free_kerbal), findKerbal("Heidi", kerbals, next_free_kerbal)};
-    addMission(&missions, initMission("STS-1", findOrbiter("Odyssey", &orbiters, next_free_orbiter), "Test Mission 1", "None", "01/01", "KSC Pad 1", "06/01", "KSC Runway", 1, 3, findKerbal("Jeb", kerbals, next_free_kerbal), launch_crew, 2, findKerbal("Jeb", kerbals, next_free_kerbal), land_crew, ""), &next_free_mission, &max_size_mission);
-    pairMission(missions[2]);
-    sortMissions(missions, next_free_mission);
+    addMission(&missions, initMission("STS-1", findOrbiter("Odyssey", &orbiters, next_free_orbiter), "Test Mission 1", "None", "01/01", "KSC Pad 1", "06/01", "KSC Runway", 0, 3, findKerbal("Jeb", kerbals, next_free_kerbal), launch_crew, 2, findKerbal("Jeb", kerbals, next_free_kerbal), NULL, ""), &next_free_mission, &max_size_mission);
 
     printf("Size of orbiter: %d bytes\nSize of mission: %d bytes\nSize of kerbal: %d bytes\n", sizeof(orbiter), sizeof(mission), sizeof(kerbal));
 

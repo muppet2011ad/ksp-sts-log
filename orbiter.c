@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "orbiter.h"
+#include "mission.h"
 
 orbiter initOrbiter(char name[ORBITER_NAME_LENGTH]) { // Function to initialise an orbiter
     orbiter new_orbiter;
@@ -17,6 +18,7 @@ void addOrbiterMission(orbiter *shuttle, mission *mission){ // Adds a mission to
     }
     shuttle->missions[shuttle->num_missions] = mission;
     shuttle->num_missions = shuttle->num_missions + 1;
+    sortMissions(shuttle->missions, shuttle->num_missions);
 }
 
 void delOrbiterMission(orbiter *shuttle, int mission){ // Deletes a mission based on position in the list (findOrbiter() can be used to find this)

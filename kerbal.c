@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "kerbal.h"
+#include "mission.h"
 
 #define MAX(x, y) (((x) > (y)) ? (x) : (y))
 
@@ -19,6 +20,7 @@ void addKerbalMission(kerbal *kerbal, mission *mission) {
     }
     kerbal->missions[kerbal->num_missions] = mission;
     kerbal->num_missions = kerbal->num_missions + 1;
+    sortMissions(kerbal->missions, kerbal->num_missions);
 }
 
 void delKerbalMission(kerbal *kerbal, int mission) {

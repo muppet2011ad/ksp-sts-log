@@ -29,6 +29,7 @@ mission* initMission(char name[MISSION_NAME_LENGTH], orbiter *orbiter, char purp
             new_mission->landing_crew[i] = landing_crew[i];
         }
     }
+    pairMission(new_mission);
     return new_mission;
 }
 
@@ -70,6 +71,7 @@ void addMission(mission **missions[], mission *new_mission, int *next_free, int 
         (*missions)[*next_free] = new_mission; // Just add on the new mission
         *next_free = *next_free + 1; // Increment the relevant counter
     }
+    sortMissions(*missions, *next_free);
 }
 
 void delMission(mission *missions[], mission *mission, int *next_free) { //TODO: Update references for orbiter and kerbals
