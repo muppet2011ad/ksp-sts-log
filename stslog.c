@@ -28,21 +28,22 @@ int main () {
     addKerbal(&kerbals, initKerbal("Ronton"), &next_free_kerbal, &max_size_kerbal);
     addKerbal(&kerbals, initKerbal("Heidi"), &next_free_kerbal, &max_size_kerbal);
 
-    mission *missions = (mission *) calloc(5, sizeof(mission));
+    mission **missions = (mission **) calloc(5, sizeof(mission*));
     int next_free_mission = 0;
     int max_size_mission = 5;
     kerbal *launch_crew[MAX_CREW_SIZE] = {findKerbal("Bill", kerbals, next_free_kerbal), findKerbal("Bob", kerbals, next_free_kerbal), findKerbal("Val", kerbals, next_free_kerbal)};
     kerbal *land_crew[MAX_CREW_SIZE] = {findKerbal("Ronton", kerbals, next_free_kerbal), findKerbal("Heidi", kerbals, next_free_kerbal)};
     addMission(&missions, initMission("STS-1", findOrbiter("Odyssey", &orbiters, next_free_orbiter), "Test Mission 1", "None", "01/01", "KSC Pad 1", "06/01", "KSC Runway", 1, 3, findKerbal("Jeb", kerbals, next_free_kerbal), launch_crew, 2, findKerbal("Jeb", kerbals, next_free_kerbal), land_crew, ""), &next_free_mission, &max_size_mission);
-    pairMission(&missions[0]);
+    pairMission(missions[0]);
     kerbal *launch_crew_2[MAX_CREW_SIZE] = {findKerbal("Bill", kerbals, next_free_kerbal), findKerbal("Val", kerbals, next_free_kerbal)};
     kerbal *landing_crew_2[MAX_CREW_SIZE] = {findKerbal("Bill", kerbals, next_free_kerbal)};
     addMission(&missions, initMission("STS-2", findOrbiter("Odyssey", &orbiters, next_free_orbiter), "Space Station Construction", "Skylab", "06/02", "KSC Pad 1", "15/02", "KSC Runway", 1, 2, findKerbal("Jeb", kerbals, next_free_kerbal), launch_crew_2, 1, findKerbal("Jeb", kerbals, next_free_kerbal), landing_crew_2, ""), &next_free_mission, &max_size_mission);
-    pairMission(&missions[1]);
+    pairMission(missions[1]);
     kerbal *launch_crew_3[MAX_CREW_SIZE] = {findKerbal("Heidi", kerbals, next_free_kerbal), findKerbal("Ronton", kerbals, next_free_kerbal)};
     kerbal *landing_crew_3[MAX_CREW_SIZE] = {findKerbal("Ronton", kerbals, next_free_kerbal), findKerbal("Val", kerbals, next_free_kerbal)};
     addMission(&missions, initMission("STS-3", findOrbiter("Enterprise", &orbiters, next_free_orbiter), "Space Station Rotation", "MPLM Donatello", "06/03", "KSC Pad 1", "15/03", "KSC Runway", 1, 2, findKerbal("Jeb", kerbals, next_free_kerbal), launch_crew_3, 2, findKerbal("Jeb", kerbals, next_free_kerbal), landing_crew_3, ""), &next_free_mission, &max_size_mission);
-    pairMission(&missions[2]);
+    pairMission(missions[2]);
+    //sortMissions(missions, next_free_mission);
 
     printf("Size of orbiter: %d bytes\nSize of mission: %d bytes\nSize of kerbal: %d bytes\n", sizeof(orbiter), sizeof(mission), sizeof(kerbal));
 
@@ -69,11 +70,11 @@ void viewMissions(mission *missions[], int *next_free) {
     printf("     | %-*s | %-*s | %-*s | %-*s | %-*s\n", MISSION_NAME_LENGTH, "Mission", ORBITER_NAME_LENGTH, "Orbiter", DATE_LENGTH, "Launch", DATE_LENGTH, "Landing", MISSION_PURPOSE_LENGTH, "Purpose");
     for (int i = 0; i < *next_free; i++) {
         printf("%3d. | %-*s | %-*s | %-*s | %-*s | %-*s\n", i, MISSION_NAME_LENGTH, (*missions)[i].name, ORBITER_NAME_LENGTH, (*missions)[i].orbiter, DATE_LENGTH, (*missions)[i].launch_date, DATE_LENGTH, (*missions)[i].landing_date, MISSION_PURPOSE_LENGTH, (*missions)[i].purpose);
-    }
+    } // Print basic info for selection
     printf("\nEnter mission index to view in detail (leave blank to return to menu): ");
     char raw_option[8];
-    input(raw_option, 8);
-    if (raw_option[0] == '\0') {
+    input(raw_option, 8); // Input shennanigans
+    if (raw_option[0] == '\0') { // If they enter nothing, quit
         return;
     }
     else {
@@ -84,9 +85,9 @@ void viewMissions(mission *missions[], int *next_free) {
             return;
         }
         else {
-            mission sel_mission = (*missions)[sel_index];
-            printf("\nMission: %s\n", sel_mission.name);
-            int orbiter_flight_num = findOrbiterMission(sel_mission.orbiter, sel_mission.name) + 1;
+            mission sel_mission = (*missions)[sel_index]; // Grab the mission (saves a lot of painful access later on)
+            printf("\nMission: %s\n", sel_mission.name); // Output some basic stuff
+            int orbiter_flight_num = findOrbiterMission(sel_mission.orbiter, sel_mission.name) + 1; // As long as orbiter flights are chronological this works
             printf("Orbiter: %s (%d%s flight)\n", sel_mission.orbiter->name, orbiter_flight_num, getOrdinal(orbiter_flight_num));
             printf("Purpose: %s\nPayload: %s\nLaunch Date: %s\nLaunch Site: %s\nLanding Date: %s\nLanding Site: %s\n", sel_mission.purpose, sel_mission.payload, sel_mission.launch_date, sel_mission.launch_site, sel_mission.landing_date, sel_mission.landing_site);
             if (sel_mission.change_crew == 0) {
