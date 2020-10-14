@@ -109,6 +109,9 @@ int isDateValid(char date[DATE_LENGTH]) {
             return 0;
         }
     }
+    if (has_slash == 0) {
+        return 0;
+    }
     const char delim[2] = "/";
     int days = atoi(strtok(date_cpy, delim));
     if (days > DAYS_IN_YEAR || days < 1) {
