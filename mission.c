@@ -147,3 +147,17 @@ int compareDates(char date1[DATE_LENGTH], char date2[DATE_LENGTH]) { // Returns 
         return -1;
     }
 }
+
+void sortMissions(mission *missions[], int size) { // Sorts missions by launch date TODO: FIX
+    int i = 1;
+    while (i < size) {
+        mission *x = missions[i];
+        int j = i - 1;
+        while (j >= 0 && compareDates(missions[j]->launch_date, x->launch_date) == 1) {
+            missions[j+1] = missions[j];
+            j--;
+        }
+        missions[j+1] = x;
+        i++;
+    }
+}
