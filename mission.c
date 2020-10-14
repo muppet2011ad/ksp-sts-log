@@ -92,6 +92,9 @@ void delMission(mission *missions[], mission *mission, int *next_free) { //TODO:
 
 int isDateValid(char date[DATE_LENGTH]) {
     char date_cpy[DATE_LENGTH];
+    if (strlen(date) > DATE_LENGTH) { 
+        return 0;
+    }
     strcpy(date_cpy, date);
     int length = strlen(date_cpy);
     int has_slash = 0;
@@ -119,11 +122,11 @@ int isDateValid(char date[DATE_LENGTH]) {
 }
 
 double dateToDouble(char date[DATE_LENGTH]) {
-    char date_cpy[DATE_LENGTH];
-    strcpy(date_cpy, date);
-    if (isDateValid(date_cpy) == 0) { 
+    if (isDateValid(date) == 0) { 
         return -1;
     }
+    char date_cpy[DATE_LENGTH];
+    strcpy(date_cpy, date);
     char *ch_days;
     char *ch_years;
     const char delim[2] = "/";
