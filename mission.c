@@ -84,6 +84,7 @@ void delMission(mission *missions[], mission *mission, int *next_free) { //TODO:
     for (int i = position; i < *next_free; i++) {
         missions[i] = missions[i+1];
     }
+    free(mission);
     *next_free = *next_free - 1;
 }
 
