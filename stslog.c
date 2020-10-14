@@ -6,9 +6,12 @@
 #include "kerbal.h"
 #include "mission.h"
 
+#define CONFIRM_DIALOGUE_LIMIT 256
+
 void input(char *string,int length);
 void viewMissions(mission **missions[], int *next_free);
 const char* getOrdinal(int i);
+int confirmDialogue(char dialogue[CONFIRM_DIALOGUE_LIMIT], int def);
 
 int main () {
     orbiter *orbiters = (orbiter *) calloc(5, sizeof(orbiter));
@@ -156,5 +159,25 @@ const char* getOrdinal(int i) {
     }
     else {
         return "st";
+    }
+}
+
+int confirmDialogue(char dialogue[CONFIRM_DIALOGUE_LIMIT], int def) {
+    if (def == 0) {
+        printf("%s [y/N]: ", dialogue);
+    }
+    else {
+        printf("%s [Y/n]: ", dialogue);
+    }
+    char resp[2];
+    input(resp, 2);
+    if (resp[0] == 'y' || resp[0] == 'Y') {
+        return 1;
+    }
+    else if (resp[0] == 'n' || resp[0] == 'N') {
+        return 0;
+    }
+    else {
+        return def;
     }
 }
