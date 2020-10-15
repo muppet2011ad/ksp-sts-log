@@ -11,6 +11,7 @@
 
 void input(char *string,int length);
 void viewMissions(mission **missions[], int *next_free);
+void newMission(mission **missions[], orbiter *orbiters[], kerbal *kerbals[], int *next_free_mission, int *next_free_orbiter, int *next_free_kerbal, int *max_size_mission, int *max_size_orbiter, int *max_size_kerbal);
 const char* getOrdinal(int i);
 int confirmDialogue(char dialogue[DIALOGUE_LIMIT], int def);
 kerbal* inputKerbal(char dialogue[DIALOGUE_LIMIT], kerbal *kerbals[], int *next_free_kerbal, int *max_size_kerbal);
@@ -51,7 +52,7 @@ int main () {
     int option = -1;
     printf("\nWelcome to the STS log program.\n");
     while (option != 0) {
-        printf("\nOptions:\n0. Exit\n1. View Missions\n2. Add Mission\n3. Edit Mission\n4. Delete Mission\n5. View Kerbals\n6. View Orbiters\n\nEnter Option: ");
+        printf("\nOptions:\n0. Exit\n1. View Missions\n2. New Mission\n3. Edit Mission\n4. Delete Mission\n5. View Kerbals\n6. View Orbiters\n\nEnter Option: ");
         char raw_option[8];
         input(raw_option, 8);
         sscanf(raw_option, "%d", &option);
@@ -59,6 +60,9 @@ int main () {
         switch (option) {
             case 1:
                 viewMissions(&missions, &next_free_mission);
+                break;
+            case 2:
+                newMission(&missions, &orbiters, &kerbals, &next_free_mission, &next_free_orbiter, &next_free_kerbal, &max_size_mission, &max_size_orbiter, &max_size_kerbal);
                 break;
         }
     }
@@ -128,6 +132,105 @@ void viewMissions(mission **missions[], int *next_free) {
             printf("Notes: %s\n", sel_mission->notes);
         }
     }
+}
+
+void newMission(mission **missions[], orbiter *orbiters[], kerbal *kerbals[], int *next_free_mission, int *next_free_orbiter, int *next_free_kerbal, int *max_size_mission, int *max_size_orbiter, int *max_size_kerbal) {
+    printf("New Mission:\n\n");
+    printf("Enter mission name: ");
+    char mission_name[MISSION_NAME_LENGTH];
+    input(mission_name, MISSION_NAME_LENGTH);
+    printf("Enter orbiter: ");
+    char str_orbiter[ORBITER_NAME_LENGTH];
+    input(str_orbiter, ORBITER_NAME_LENGTH);
+    orbiter *ptr_orbiter = findOrbiter(str_orbiter, orbiters, *next_free_orbiter);
+    if (ptr_orbiter == NULL) {
+        if (confirmDialogue("\tOrbiter does not exist. Would you like to create it?", 1) == 1) {
+            addOrbiter(orbiters, initOrbiter(str_orbiter), next_free_orbiter, max_size_orbiter);
+            ptr_orbiter = &(*orbiters)[*next_free_orbiter-1];
+        }
+        else {
+            return;
+        }
+    }
+    printf("Enter mission purpose: ");
+    char purpose[MISSION_PURPOSE_LENGTH];
+    input(purpose, MISSION_PURPOSE_LENGTH);
+    printf("Enter payload: ");
+    char payload[MISSION_PAYLOAD_LENGTH];
+    input(payload, MISSION_PAYLOAD_LENGTH);
+    char launch_date[DATE_LENGTH] = "";
+    do {
+        printf("Enter launch date: ");
+        input(launch_date, DATE_LENGTH);
+        if (!isDateValid(launch_date)) {
+            printf("\tInvalid date!\n");
+        }
+    } while (!isDateValid(launch_date));
+    printf("Enter launch site: ");
+    char launch_site[SITE_LENGTH];
+    input(launch_site, SITE_LENGTH);
+    char landing_date[DATE_LENGTH];
+    do {
+        printf("Enter landing date: ");
+        input(landing_date, DATE_LENGTH);
+        if (!isDateValid(landing_date)) {
+            printf("\tInvalid date!\n");
+            continue;
+        }
+        if (compareDates(launch_date, landing_date) == 1) {
+            printf("\tLanding date is before launch date?\n");
+            landing_date[0] = '\0';
+        }
+    } while (!isDateValid(landing_date));
+    printf("Enter landing site: ");
+    char landing_site[SITE_LENGTH];
+    input(landing_site, SITE_LENGTH);
+    int change_crew = confirmDialogue("Does the crew change during the flight?", 0);
+    char launch_prompt_cmdr[DIALOGUE_LIMIT];
+    char launch_prompt_crew[DIALOGUE_LIMIT];
+    int launch_size;
+    int landing_size;
+    if (change_crew) {
+        strcpy(launch_prompt_cmdr, "Enter launch commander:");
+        strcpy(launch_prompt_crew, "Enter launch crew member:");
+        launch_size = intInput("How many kerbals launching (not including the commander)?");
+        landing_size = intInput("How many kerbals landing (not including the commander)?");
+    }
+    else {
+        strcpy(launch_prompt_cmdr, "Enter mission commander:");
+        strcpy(launch_prompt_crew, "Enter crew member:");
+        launch_size = intInput("How many kerbals on the mission (not including the commander)?");
+    }
+    kerbal *launch_commander = inputKerbal(launch_prompt_cmdr, kerbals, next_free_kerbal, max_size_kerbal);
+    if (launch_commander == NULL) {return;}
+    kerbal *launch_crew[MAX_CREW_SIZE];
+    for (int i = 0; i < launch_size; i++) {
+        kerbal *crew_member = inputKerbal(launch_prompt_crew, kerbals, next_free_kerbal, max_size_kerbal);
+        if (crew_member == NULL) {
+            i--;
+            launch_size--;
+            continue;
+        }
+        launch_crew[i] = crew_member;
+    }
+    kerbal *landing_commander;
+    kerbal *landing_crew[MAX_CREW_SIZE];    
+    if (change_crew) {
+        landing_commander = inputKerbal("Enter landing commander:", kerbals, next_free_kerbal, max_size_kerbal);
+        for (int i = 0; i < landing_size; i++) {
+            kerbal *crew_member = inputKerbal("Enter landing crew member:", kerbals, next_free_kerbal, max_size_kerbal);
+            if (crew_member == NULL) {
+                i--;
+                landing_size--;
+                continue;
+            }
+            landing_crew[i] = crew_member;
+        }
+    }
+    printf("Enter any mission notes: ");
+    char mission_notes[MISSION_NOTES_LENGTH];
+    input(mission_notes, MISSION_NOTES_LENGTH);
+    addMission(missions, initMission(mission_name, ptr_orbiter, purpose, payload, launch_date, launch_site, landing_date, landing_site, change_crew, launch_size, launch_commander, launch_crew, landing_size, landing_commander, landing_crew, mission_notes), next_free_mission, max_size_mission);
 }
 
 void input(char *string,int length) {
