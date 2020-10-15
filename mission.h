@@ -11,5 +11,6 @@ int isDateValid(char date[DATE_LENGTH]);
 double dateToDouble(char date[DATE_LENGTH]);
 int compareDates(char date1[DATE_LENGTH], char date2[DATE_LENGTH]);
 void sortMissions(mission *missions[], int size);
+mission* findMission(char name[MISSION_NAME_LENGTH], mission *missions[], int *next_free);
 
 #endif

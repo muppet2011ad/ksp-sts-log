@@ -90,6 +90,15 @@ void delMission(mission *missions[], mission *mission, int *next_free) { //TODO:
     *next_free = *next_free - 1;
 }
 
+mission* findMission(char name[MISSION_NAME_LENGTH], mission *missions[], int *next_free) {
+    for (int i = 0; i < *next_free; i++) {
+        if (strcmp(missions[i]->name, name) == 0) {
+            return missions[i];
+        }
+    }
+    return NULL;
+}
+
 int isDateValid(char date[DATE_LENGTH]) {
     char date_cpy[DATE_LENGTH];
     if (strlen(date) > DATE_LENGTH) { 

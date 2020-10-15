@@ -139,6 +139,10 @@ void newMission(mission **missions[], orbiter *orbiters[], kerbal *kerbals[], in
     printf("Enter mission name: ");
     char mission_name[MISSION_NAME_LENGTH];
     input(mission_name, MISSION_NAME_LENGTH);
+    if (findMission(mission_name, *missions, next_free_mission)) {
+        printf("\tMission with that name already exists!\n");
+        return;
+    };
     printf("Enter orbiter: ");
     char str_orbiter[ORBITER_NAME_LENGTH];
     input(str_orbiter, ORBITER_NAME_LENGTH);
