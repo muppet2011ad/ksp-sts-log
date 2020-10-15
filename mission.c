@@ -55,7 +55,7 @@ void pairMission(mission *mission) { // Function to pair mission with its orbite
 
 void addMission(mission **missions[], mission *new_mission, int *next_free, int *max_size) { // Adds a new mission to a dynamically-allocated array of missions. First two params are hopefully obvious. Third is the index of the next available space. Fourth is the current size of the array.
     if (*next_free >= *max_size) { // If we need to extend the array
-        mission **tempalloc = realloc(**missions, sizeof(mission)*(*max_size+5)); // Realloc memory to extend the array
+        mission **tempalloc = (mission **) realloc(*missions, sizeof(mission*)*(*max_size+5)); // Realloc memory to extend the array
         if (tempalloc != NULL) { // If the realloc was successful
             tempalloc[*next_free] = new_mission; // Add the new mission to the array
             *next_free = *next_free + 1;
