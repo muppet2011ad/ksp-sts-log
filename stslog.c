@@ -127,7 +127,7 @@ void viewMissions(mission **missions[], int *next_free) {
                     }
                 }
                 for (int i = 0; i < sel_mission->landing_size; i++) {
-                    if (isKerbalInList(sel_mission->landing_crew[i], sel_mission->launch_crew, sel_mission->landing_size) == 0) {
+                    if (isKerbalInList(sel_mission->landing_crew[i], sel_mission->launch_crew, sel_mission->launch_size) == 0) {
                         int crew_flights = getKerbalFlightsAtMission(sel_mission->landing_crew[i], sel_mission);
                         printf("\t%s Kerman (%d%s flight) (landing only)\n", sel_mission->landing_crew[i]->name, crew_flights, getOrdinal(crew_flights));
                     }
@@ -341,14 +341,14 @@ void editMission(mission **missions[], orbiter *orbiters[], kerbal *kerbals[], i
                     else {
                         strcpy(mission_or_launch, "Mission");
                     }
-                    printf("\t%s Commander: %s\n\t%s Crew: ", mission_or_launch, sel_mission->launch_commander->name, mission_or_launch);
+                    printf("\t%s Commander: %s\n\t%s Crew (%d): ", mission_or_launch, sel_mission->launch_commander->name, mission_or_launch, sel_mission->launch_size);
                     int i;
                     for (i = 0; i < sel_mission->launch_size-1; i++) {
                         printf("%s, ", sel_mission->launch_crew[i]->name);
                     }
                     printf("%s\n", sel_mission->launch_crew[i]->name);
                     if (sel_mission->change_crew) {
-                        printf("\tLanding Commander: %s\n\tLanding Crew: ", sel_mission->landing_commander);
+                        printf("\tLanding Commander: %s\n\tLanding Crew (%d): ", sel_mission->landing_commander, sel_mission->landing_size);
                         for (i = 0; i < sel_mission->landing_size-1; i++) {
                             printf("%s, ", sel_mission->landing_crew[i]->name);
                         }
@@ -399,7 +399,6 @@ void editMission(mission **missions[], orbiter *orbiters[], kerbal *kerbals[], i
                     int temp = findKerbalMissionFromPtr(sel_mission->launch_commander, sel_mission);
                     if (temp != -1) delKerbalMission(sel_mission->launch_commander, findKerbalMissionFromPtr(sel_mission->launch_commander, sel_mission));
                     sel_mission->launch_commander = launch_commander;
-                    addKerbalMission(launch_commander, sel_mission);
                     for (int i = 0; i < launch_size; i++) {
                         if (i < sel_mission->launch_size) {
                             temp = findKerbalMissionFromPtr(sel_mission->launch_crew[i], sel_mission);
@@ -408,24 +407,26 @@ void editMission(mission **missions[], orbiter *orbiters[], kerbal *kerbals[], i
                             }
                         }
                         sel_mission->launch_crew[i] = launch_crew[i];
-                        addKerbalMission(sel_mission->launch_crew[i], sel_mission);
                     }
                     sel_mission->launch_size = launch_size;
                     if (change_crew) {
                         temp = findKerbalMissionFromPtr(sel_mission->landing_commander, sel_mission);
                         if (temp != -1) delKerbalMission(sel_mission->landing_commander, temp);
                         sel_mission->landing_commander = landing_commander;
-                        addKerbalMission(landing_commander, sel_mission);
                         for (int i = 0; i < landing_size; i++) {
                             if (i < sel_mission->landing_size) {
                                 temp = findKerbalMissionFromPtr(sel_mission->landing_crew[i], sel_mission);
                                 if (temp != -1) delKerbalMission(sel_mission->landing_crew[i], temp);
                             }
                             sel_mission->landing_crew[i] = landing_crew[i];
-                            addKerbalMission(sel_mission->landing_crew[i], sel_mission);
                         }
                         sel_mission->landing_size = landing_size;
                     }
+                    pairMission(sel_mission);
+                    break;
+                case 7:
+                    printf("Current mission notes: %s\nNew mission notes: ", sel_mission->notes);
+                    input(sel_mission->notes, MISSION_NOTES_LENGTH);
                     break;
             }
         }
