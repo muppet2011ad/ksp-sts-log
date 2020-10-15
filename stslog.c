@@ -9,13 +9,17 @@
 #define DIALOGUE_LIMIT 256
 #define INT_INPUT_DIGITS 8
 
+#define YORN(x) ((x == 0) ? 'n' : 'y')
+
 void input(char *string,int length);
 void viewMissions(mission **missions[], int *next_free);
 void newMission(mission **missions[], orbiter *orbiters[], kerbal *kerbals[], int *next_free_mission, int *next_free_orbiter, int *next_free_kerbal, int *max_size_mission, int *max_size_orbiter, int *max_size_kerbal);
+void editMission(mission **missions[], orbiter *orbiters[], kerbal *kerbals[], int *next_free_mission, int *next_free_orbiter, int *next_free_kerbal, int *max_size_mission, int *max_size_orbiter, int *max_size_kerbal);
 const char* getOrdinal(int i);
 int confirmDialogue(char dialogue[DIALOGUE_LIMIT], int def);
 kerbal* inputKerbal(char dialogue[DIALOGUE_LIMIT], kerbal *kerbals[], int *next_free_kerbal, int *max_size_kerbal);
 int intInput(char dialogue[DIALOGUE_LIMIT]);
+void displayMissionTable(mission **missions[], int *next_free_mission);
 
 int main () {
     orbiter *orbiters = (orbiter *) calloc(5, sizeof(orbiter));
@@ -64,6 +68,9 @@ int main () {
             case 2:
                 newMission(&missions, &orbiters, &kerbals, &next_free_mission, &next_free_orbiter, &next_free_kerbal, &max_size_mission, &max_size_orbiter, &max_size_kerbal);
                 break;
+            case 3:
+                editMission(&missions, &orbiters, &kerbals, &next_free_mission, &next_free_orbiter, &next_free_kerbal, &max_size_mission, &max_size_orbiter, &max_size_kerbal);
+                break;
         }
     }
 
@@ -72,10 +79,7 @@ int main () {
 
 void viewMissions(mission **missions[], int *next_free) {
     printf("Missions:\n");
-    printf("     | %-*s | %-*s | %-*s | %-*s | %-*s\n", MISSION_NAME_LENGTH, "Mission", ORBITER_NAME_LENGTH, "Orbiter", DATE_LENGTH, "Launch", DATE_LENGTH, "Landing", MISSION_PURPOSE_LENGTH, "Purpose");
-    for (int i = 0; i < *next_free; i++) {
-        printf("%3d. | %-*s | %-*s | %-*s | %-*s | %-*s\n", i, MISSION_NAME_LENGTH, (*missions)[i]->name, ORBITER_NAME_LENGTH, (*missions)[i]->orbiter, DATE_LENGTH, (*missions)[i]->launch_date, DATE_LENGTH, (*missions)[i]->landing_date, MISSION_PURPOSE_LENGTH, (*missions)[i]->purpose);
-    } // Print basic info for selection
+    displayMissionTable(missions, next_free);
     printf("\nEnter mission index to view in detail (leave blank to return to menu): ");
     char raw_option[8];
     input(raw_option, 8); // Input shennanigans
@@ -123,7 +127,7 @@ void viewMissions(mission **missions[], int *next_free) {
                     }
                 }
                 for (int i = 0; i < sel_mission->landing_size; i++) {
-                    if (isKerbalInList(sel_mission->landing_crew[i], sel_mission->launch_crew, sel_mission->landing_size) == 0) {
+                    if (isKerbalInList(sel_mission->landing_crew[i], sel_mission->launch_crew, sel_mission->launch_size) == 0) {
                         int crew_flights = getKerbalFlightsAtMission(sel_mission->landing_crew[i], sel_mission);
                         printf("\t%s Kerman (%d%s flight) (landing only)\n", sel_mission->landing_crew[i]->name, crew_flights, getOrdinal(crew_flights));
                     }
@@ -237,6 +241,198 @@ void newMission(mission **missions[], orbiter *orbiters[], kerbal *kerbals[], in
     addMission(missions, initMission(mission_name, ptr_orbiter, purpose, payload, launch_date, launch_site, landing_date, landing_site, change_crew, launch_size, launch_commander, launch_crew, landing_size, landing_commander, landing_crew, mission_notes), next_free_mission, max_size_mission);
 }
 
+void editMission(mission **missions[], orbiter *orbiters[], kerbal *kerbals[], int *next_free_mission, int *next_free_orbiter, int *next_free_kerbal, int *max_size_mission, int *max_size_orbiter, int *max_size_kerbal) {
+    printf("Missions:\n");
+    displayMissionTable(missions, next_free_mission);
+    printf("\nEnter mission index to edit (leave blank to return to menu): ");
+    char raw_option[8];
+    input(raw_option, 8); // Input shennanigans
+    if (raw_option[0] == '\0') { // If they enter nothing, quit
+        return;
+    }
+    int sel_index;
+    sscanf(raw_option, "%d", &sel_index);
+    if (sel_index >= *next_free_mission || sel_index < 0) {
+            printf("Invalid index (too high or too low).\n");
+            return;
+    }
+    else {
+        mission *sel_mission = (*missions)[sel_index];
+        int option = -1;
+        while (option != 0) {
+            option = intInput("\nEdit Menu:\n0. Exit\n1. Name\n2. Orbiter\n3. Purpose+Payload\n4. Launch Date+Site\n5. Landing Date+Site\n6. Crew\n7. Notes\n\nEnter Selection:");
+            printf("\n");
+            switch (option){
+                case 0:
+                    return;
+                case 1:
+                    printf("Enter new name (currently %s): ", sel_mission->name);
+                    char temp_name[MISSION_NAME_LENGTH];
+                    input(temp_name, MISSION_NAME_LENGTH);
+                    if (findMission(temp_name, *missions, next_free_mission)) {
+                        printf("\tMission with that name already exists!\n");
+                        break;
+                    };
+                    strcpy(sel_mission->name, temp_name);
+                    break;
+                case 2:
+                    printf("Enter new orbiter (currently %s): ", sel_mission->orbiter->name);
+                    char orbiter_name[ORBITER_NAME_LENGTH];
+                    input(orbiter_name, ORBITER_NAME_LENGTH);
+                    orbiter *ptr_orbiter = findOrbiter(orbiter_name, orbiters, *next_free_orbiter);
+                    if (ptr_orbiter == NULL) {
+                        if (confirmDialogue("\tOrbiter does not exist. Would you like to create it?", 1) == 1) {
+                            addOrbiter(orbiters, initOrbiter(orbiter_name), next_free_orbiter, max_size_orbiter);
+                            ptr_orbiter = &(*orbiters)[*next_free_orbiter-1];
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                    delOrbiterMission(sel_mission->orbiter, findOrbiterMission(sel_mission->orbiter, sel_mission->name));
+                    sel_mission->orbiter = ptr_orbiter;
+                    addOrbiterMission(sel_mission->orbiter, sel_mission);
+                    break;
+                case 3:
+                    printf("Enter new mission purpose (currently %s): ", sel_mission->purpose);
+                    input(sel_mission->purpose, MISSION_PURPOSE_LENGTH);
+                    printf("Enter new mission payload (currently %s): ", sel_mission->payload);
+                    input(sel_mission->payload, MISSION_PAYLOAD_LENGTH);
+                    break;
+                case 4:
+                    printf("Enter new launch date (currently %s): ", sel_mission->launch_date);
+                    char temp_launch_date[DATE_LENGTH];
+                    input(temp_launch_date, DATE_LENGTH);
+                    if (!isDateValid(temp_launch_date)) {
+                        printf("\tInvalid Date!\n");
+                        break;
+                    }
+                    if (compareDates(temp_launch_date, sel_mission->landing_date) == 1) {
+                        printf("\tLaunch date is after landing?\n");
+                        break;
+                    }
+                    strcpy(sel_mission->launch_date, temp_launch_date);
+                    printf("Enter new launch site (currently %s): ", sel_mission->launch_site);
+                    input(sel_mission->launch_site, SITE_LENGTH);
+                    sortMissions(*missions, *next_free_mission);
+                    break;
+                case 5:
+                    printf("Enter new landing date (currently %s): ", sel_mission->landing_date);
+                    char temp_landing_date[DATE_LENGTH];
+                    input(temp_landing_date, DATE_LENGTH);
+                    if (!isDateValid(temp_landing_date)) {
+                        printf("\tInvalid Date!\n");
+                        break;
+                    }
+                    if (compareDates(sel_mission->launch_date, temp_landing_date) == 1) {
+                        printf("\tLanding date is before launch?\n");
+                        break;
+                    }
+                    strcpy(sel_mission->landing_date, temp_landing_date);
+                    printf("Enter new landing site (currently %s): ", sel_mission->landing_site);
+                    input(sel_mission->landing_site, SITE_LENGTH);
+                    break;
+                case 6:
+                    printf("Current Crew Data for %s:\n\tDoes crew change during mission? %c\n", sel_mission->name, YORN(sel_mission->change_crew));
+                    char mission_or_launch[8];
+                    if (sel_mission->change_crew) {
+                        strcpy(mission_or_launch, "Launch");
+                    }
+                    else {
+                        strcpy(mission_or_launch, "Mission");
+                    }
+                    printf("\t%s Commander: %s\n\t%s Crew (%d): ", mission_or_launch, sel_mission->launch_commander->name, mission_or_launch, sel_mission->launch_size);
+                    int i;
+                    for (i = 0; i < sel_mission->launch_size-1; i++) {
+                        printf("%s, ", sel_mission->launch_crew[i]->name);
+                    }
+                    printf("%s\n", sel_mission->launch_crew[i]->name);
+                    if (sel_mission->change_crew) {
+                        printf("\tLanding Commander: %s\n\tLanding Crew (%d): ", sel_mission->landing_commander, sel_mission->landing_size);
+                        for (i = 0; i < sel_mission->landing_size-1; i++) {
+                            printf("%s, ", sel_mission->landing_crew[i]->name);
+                        }
+                        printf("%s\n", sel_mission->landing_crew[i]->name);
+                    }
+                    int change_crew = confirmDialogue("Does the crew change during the flight?", sel_mission->change_crew);
+                    char launch_prompt_cmdr[DIALOGUE_LIMIT];
+                    char launch_prompt_crew[DIALOGUE_LIMIT];
+                    int launch_size;
+                    int landing_size = 0;
+                    if (change_crew) {
+                        strcpy(launch_prompt_cmdr, "Enter launch commander:");
+                        strcpy(launch_prompt_crew, "Enter launch crew member:");
+                        launch_size = intInput("How many kerbals launching (not including the commander)?");
+                        landing_size = intInput("How many kerbals landing (not including the commander)?");
+                    }
+                    else {
+                        strcpy(launch_prompt_cmdr, "Enter mission commander:");
+                        strcpy(launch_prompt_crew, "Enter crew member:");
+                        launch_size = intInput("How many kerbals on the mission (not including the commander)?");
+                    }
+                    kerbal *launch_commander = inputKerbal(launch_prompt_cmdr, kerbals, next_free_kerbal, max_size_kerbal);
+                    if (launch_commander == NULL) {return;}
+                    kerbal *launch_crew[MAX_CREW_SIZE];
+                    for (int i = 0; i < launch_size; i++) {
+                        kerbal *crew_member = inputKerbal(launch_prompt_crew, kerbals, next_free_kerbal, max_size_kerbal);
+                        if (crew_member == NULL) {
+                            i--;
+                            launch_size--;
+                            continue;
+                        }
+                        launch_crew[i] = crew_member;
+                    }
+                    kerbal *landing_commander;
+                    kerbal *landing_crew[MAX_CREW_SIZE];    
+                    if (change_crew) {
+                        landing_commander = inputKerbal("Enter landing commander:", kerbals, next_free_kerbal, max_size_kerbal);
+                        for (int i = 0; i < landing_size; i++) {
+                            kerbal *crew_member = inputKerbal("Enter landing crew member:", kerbals, next_free_kerbal, max_size_kerbal);
+                            if (crew_member == NULL) {
+                                i--;
+                                landing_size--;
+                                continue;
+                            }
+                            landing_crew[i] = crew_member;
+                        }
+                    }
+                    int temp = findKerbalMissionFromPtr(sel_mission->launch_commander, sel_mission);
+                    if (temp != -1) delKerbalMission(sel_mission->launch_commander, findKerbalMissionFromPtr(sel_mission->launch_commander, sel_mission));
+                    sel_mission->launch_commander = launch_commander;
+                    for (int i = 0; i < launch_size; i++) {
+                        if (i < sel_mission->launch_size) {
+                            temp = findKerbalMissionFromPtr(sel_mission->launch_crew[i], sel_mission);
+                            if (temp != -1) {
+                                delKerbalMission(sel_mission->launch_crew[i], temp);
+                            }
+                        }
+                        sel_mission->launch_crew[i] = launch_crew[i];
+                    }
+                    sel_mission->launch_size = launch_size;
+                    if (change_crew) {
+                        temp = findKerbalMissionFromPtr(sel_mission->landing_commander, sel_mission);
+                        if (temp != -1) delKerbalMission(sel_mission->landing_commander, temp);
+                        sel_mission->landing_commander = landing_commander;
+                        for (int i = 0; i < landing_size; i++) {
+                            if (i < sel_mission->landing_size) {
+                                temp = findKerbalMissionFromPtr(sel_mission->landing_crew[i], sel_mission);
+                                if (temp != -1) delKerbalMission(sel_mission->landing_crew[i], temp);
+                            }
+                            sel_mission->landing_crew[i] = landing_crew[i];
+                        }
+                        sel_mission->landing_size = landing_size;
+                    }
+                    pairMission(sel_mission);
+                    break;
+                case 7:
+                    printf("Current mission notes: %s\nNew mission notes: ", sel_mission->notes);
+                    input(sel_mission->notes, MISSION_NOTES_LENGTH);
+                    break;
+            }
+        }
+    }
+}
+
 void input(char *string,int length) {
     fgets(string,length,stdin);
     int i = 0;
@@ -319,4 +515,11 @@ int intInput(char dialogue[DIALOGUE_LIMIT]) {
     input(resp, INT_INPUT_DIGITS);
     sscanf(resp, "%d", &result);
     return result;
+}
+
+void displayMissionTable(mission **missions[], int *next_free_mission) {
+    printf("     | %-*s | %-*s | %-*s | %-*s | %-*s\n", MISSION_NAME_LENGTH, "Mission", ORBITER_NAME_LENGTH, "Orbiter", DATE_LENGTH, "Launch", DATE_LENGTH, "Landing", MISSION_PURPOSE_LENGTH, "Purpose");
+    for (int i = 0; i < *next_free_mission; i++) {
+        printf("%3d. | %-*s | %-*s | %-*s | %-*s | %-*s\n", i, MISSION_NAME_LENGTH, (*missions)[i]->name, ORBITER_NAME_LENGTH, (*missions)[i]->orbiter, DATE_LENGTH, (*missions)[i]->launch_date, DATE_LENGTH, (*missions)[i]->landing_date, MISSION_PURPOSE_LENGTH, (*missions)[i]->purpose);
+    } 
 }
