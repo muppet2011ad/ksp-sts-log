@@ -6,12 +6,15 @@
 #include "kerbal.h"
 #include "mission.h"
 
-#define CONFIRM_DIALOGUE_LIMIT 256
+#define DIALOGUE_LIMIT 256
+#define INT_INPUT_DIGITS 8
 
 void input(char *string,int length);
 void viewMissions(mission **missions[], int *next_free);
 const char* getOrdinal(int i);
-int confirmDialogue(char dialogue[CONFIRM_DIALOGUE_LIMIT], int def);
+int confirmDialogue(char dialogue[DIALOGUE_LIMIT], int def);
+kerbal* inputKerbal(char dialogue[DIALOGUE_LIMIT], kerbal *kerbals[], int *next_free_kerbal, int *max_size_kerbal);
+int intInput(char dialogue[DIALOGUE_LIMIT]);
 
 int main () {
     orbiter *orbiters = (orbiter *) calloc(5, sizeof(orbiter));
@@ -162,7 +165,27 @@ const char* getOrdinal(int i) {
     }
 }
 
-int confirmDialogue(char dialogue[CONFIRM_DIALOGUE_LIMIT], int def) {
+kerbal* inputKerbal(char dialogue[DIALOGUE_LIMIT], kerbal *kerbals[], int *next_free_kerbal, int *max_size_kerbal) {
+    printf("%s ", dialogue);
+    char kerbal_name[KERBAL_NAME_LENGTH];
+    input(kerbal_name, KERBAL_NAME_LENGTH);
+    kerbal *ptr_kerbal = findKerbal(kerbal_name, *kerbals, *next_free_kerbal);
+    if (ptr_kerbal == NULL) {
+        int new_kerb = confirmDialogue("\tKerbal does not exist. Create kerbal (y) or abort (n)?", 1);
+        if (new_kerb) {
+            addKerbal(kerbals, initKerbal(kerbal_name), next_free_kerbal, max_size_kerbal);
+            return &(*kerbals)[*next_free_kerbal-1];
+        }
+        else {
+            return NULL;
+        }
+    }
+    else {
+        return ptr_kerbal;
+    }
+}
+
+int confirmDialogue(char dialogue[DIALOGUE_LIMIT], int def) {
     if (def == 0) {
         printf("%s [y/N]: ", dialogue);
     }
@@ -180,4 +203,13 @@ int confirmDialogue(char dialogue[CONFIRM_DIALOGUE_LIMIT], int def) {
     else {
         return def;
     }
+}
+
+int intInput(char dialogue[DIALOGUE_LIMIT]) {
+    int result;
+    char resp[INT_INPUT_DIGITS];
+    printf("%s ", dialogue);
+    input(resp, INT_INPUT_DIGITS);
+    sscanf(resp, "%d", &result);
+    return result;
 }
