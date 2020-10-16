@@ -15,6 +15,7 @@ void input(char *string,int length);
 void viewMissions(mission **missions[], int *next_free);
 void newMission(mission **missions[], orbiter *orbiters[], kerbal *kerbals[], int *next_free_mission, int *next_free_orbiter, int *next_free_kerbal, int *max_size_mission, int *max_size_orbiter, int *max_size_kerbal);
 void editMission(mission **missions[], orbiter *orbiters[], kerbal *kerbals[], int *next_free_mission, int *next_free_orbiter, int *next_free_kerbal, int *max_size_mission, int *max_size_orbiter, int *max_size_kerbal);
+void removeMission(mission **missions[], int *next_free_mission, int *max_size_mission);
 const char* getOrdinal(int i);
 int confirmDialogue(char dialogue[DIALOGUE_LIMIT], int def);
 kerbal* inputKerbal(char dialogue[DIALOGUE_LIMIT], kerbal *kerbals[], int *next_free_kerbal, int *max_size_kerbal);
@@ -70,6 +71,9 @@ int main () {
                 break;
             case 3:
                 editMission(&missions, &orbiters, &kerbals, &next_free_mission, &next_free_orbiter, &next_free_kerbal, &max_size_mission, &max_size_orbiter, &max_size_kerbal);
+                break;
+            case 4:
+                removeMission(&missions, &next_free_mission, &max_size_mission);
                 break;
         }
     }
@@ -430,6 +434,24 @@ void editMission(mission **missions[], orbiter *orbiters[], kerbal *kerbals[], i
                     break;
             }
         }
+    }
+}
+
+void removeMission(mission **missions[], int *next_free_mission, int *max_size_mission) {
+    printf("Deletable Missions:\n");
+    displayMissionTable(missions, next_free_mission);
+    int selection = intInput("Enter mission to delete (leave blank to return to menu):");
+    if (selection == 32767) return;
+    if (selection < 0 || selection >= *next_free_mission) {
+        printf("\tSelection too high or low!\n");
+        return;
+    }
+    mission *to_delete = (*missions)[selection];
+    char dialogue[DIALOGUE_LIMIT] = "Are you sure you want to delete mission ";
+    strcat(dialogue, to_delete->name);
+    strcat(dialogue, "? This action cannot be reversed.");
+    if (confirmDialogue(dialogue, 0)) {
+        delMission(*missions, to_delete, next_free_mission);
     }
 }
 
