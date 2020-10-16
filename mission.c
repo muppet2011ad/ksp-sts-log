@@ -74,7 +74,7 @@ void addMission(mission **missions[], mission *new_mission, int *next_free, int 
     sortMissions(*missions, *next_free);
 }
 
-void delMission(mission *missions[], mission *mission, int *next_free) { //TODO: Update references for orbiter and kerbals
+void delMission(mission *missions[], mission *mission, int *next_free) {
     int position = -1;
     for (int i = 0; i < *next_free; i++) {
         if (missions[i] == mission) {
@@ -85,6 +85,19 @@ void delMission(mission *missions[], mission *mission, int *next_free) { //TODO:
     if (position == -1) { printf ("\nError: attempting to delete non-existent mission\n"); return; }
     for (int i = position; i < *next_free; i++) {
         missions[i] = missions[i+1];
+    }
+    delOrbiterMission(mission->orbiter, findOrbiterMission(mission->orbiter, mission->name));
+    delKerbalMission(mission->launch_commander, findKerbalMissionFromPtr(mission->launch_commander, mission));
+    for (int i = 0; i < mission->launch_size; i++) {
+        delKerbalMission(mission->launch_crew[i], findKerbalMissionFromPtr(mission->launch_crew[i], mission));
+    }
+    if (mission->change_crew) {
+        int temp = findKerbalMissionFromPtr(mission->landing_commander, mission);
+        if (temp != -1) delKerbalMission(mission->landing_commander, temp);
+        for (int i = 0; i < mission->landing_size; i++) {
+            temp = findKerbalMissionFromPtr(mission->landing_crew[i], mission);                
+            if (temp != -1) delKerbalMission(mission->landing_crew[i], temp);
+        }
     }
     free(mission);
     *next_free = *next_free - 1;
