@@ -506,6 +506,24 @@ void viewKerbals(kerbal *kerbals[], int *next_free_kerbal) {
         }
         printf("%3d. | %-*s | %-*d  | %-*s | %-*s\n", i, KERBAL_NAME_LENGTH + 7, out_name, 12, sorted_kerbals[i].num_missions, MISSION_NAME_LENGTH, out_f_mission, MISSION_NAME_LENGTH, out_l_mission);
     } 
+    int sel_kerbal_index = intInput("\nEnter a kerbal index to view in detail (leave blank to return to menu):");
+    if (sel_kerbal_index >= *next_free_kerbal || sel_kerbal_index < 0) return;
+    kerbal sel_kerbal = sorted_kerbals[sel_kerbal_index];
+    char out_f_mission[MISSION_NAME_LENGTH] = "-";
+    char out_l_mission[MISSION_NAME_LENGTH] = "-";
+    char f_mission_date[DATE_LENGTH] = "-";
+    char l_mission_date[DATE_LENGTH] = "-";
+    int still_in_orbit = 0;
+    if (sel_kerbal.num_missions != 0) {
+        strcpy(out_f_mission, sel_kerbal.missions[0]->name);
+        strcpy(f_mission_date, sel_kerbal.missions[0]->launch_date);
+        strcpy(out_l_mission, sel_kerbal.missions[sel_kerbal.num_missions-1]->name);
+        strcpy(l_mission_date, sel_kerbal.missions[sel_kerbal.num_missions-1]->launch_date);
+        still_in_orbit = isKerbalInSpace(findKerbal(sel_kerbal.name, *kerbals, *next_free_kerbal));
+    }
+    printf("\nName: %s Kerman\nNumber of Missions: %d\nFirst Mission: %s (launched %s)\nLast Mission: %s (launched %s)\nLanded with %s: %c\n", sel_kerbal.name, sel_kerbal.num_missions, out_f_mission, f_mission_date, out_l_mission, l_mission_date, out_l_mission, YORN(!still_in_orbit));
+    mission **ptr_missions = &sel_kerbal.missions[0];
+    viewMissions(&ptr_missions, &sel_kerbal.num_missions);
 }
 
 void input(char *string,int length) {
