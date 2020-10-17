@@ -128,6 +128,16 @@ int isKerbalInList(kerbal *kerb, kerbal *kerbals[], int size) {
     return 0;
 }
 
+int isKerbalInSpace(kerbal *kerb) {
+    if (kerb->num_missions == 0) return 0;
+    mission *last_mission = kerb->missions[kerb->num_missions-1];
+    if (last_mission->change_crew == 0) return 0;
+    if (last_mission->landing_commander != kerb) {
+        return !isKerbalInList(kerb, last_mission->landing_crew, last_mission->landing_size);
+    }
+    else return 0;
+}
+
 void addKerbal(kerbal *kerbals[], kerbal new_kerbal, int *next_free, int *max_size) { // Adds a new kerbal to a dynamically-allocated array of kerbals. First two params are hopefully obvious. Third is the index of the next available space. Fourth is the current size of the array.
     if (*next_free >= *max_size) { // If we need to extend the array
         kerbal *tempalloc = realloc(*kerbals, sizeof(kerbal)*(*max_size+5)); // Realloc memory to extend the array
