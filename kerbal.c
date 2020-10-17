@@ -163,3 +163,73 @@ void delKerbal(kerbal *kerbals[], kerbal *kerbal, int *next_free) {
     }
     *next_free = *next_free - 1;
 }
+
+int compareKerbalNameAZ(const void *kerbal1, const void *kerbal2) {
+    return strcmp(((kerbal*)kerbal1)->name, ((kerbal*)kerbal2)->name);
+}
+
+int compareKerbalNameZA(const void *kerbal1, const void *kerbal2) {
+    return -strcmp(((kerbal*)kerbal1)->name, ((kerbal*)kerbal2)->name);
+}
+
+int compareKerbalFirstFlightAsc(const void *kerbal1, const void *kerbal2) {
+    kerbal *kerb1 = (kerbal*) kerbal1;
+    kerbal *kerb2 = (kerbal*) kerbal2;
+    // Deal with kerbals having no missions:
+    if (kerb1->num_missions == 0 && kerb2->num_missions != 0) {
+        return 1;
+    }
+    else if (kerb1->num_missions == 0 && kerb2->num_missions == 0) {
+        return 0;
+    }
+    else if (kerb1->num_missions != 0 && kerb2->num_missions == 0) {
+        return -1;
+    }
+    else {
+        return compareDates(kerb1->missions[0]->launch_date, kerb2->missions[0]->launch_date);
+    }
+}
+
+int compareKerbalFirstFlightDesc(const void *kerbal1, const void *kerbal2) {
+    return -compareKerbalFirstFlightAsc(kerbal1, kerbal2);
+}
+
+int compareKerbalLastFlightAsc(const void *kerbal1, const void *kerbal2) {
+    kerbal *kerb1 = (kerbal*) kerbal1;
+    kerbal *kerb2 = (kerbal*) kerbal2;
+    // Deal with kerbals having no missions:
+    if (kerb1->num_missions == 0 && kerb2->num_missions != 0) {
+        return 1;
+    }
+    else if (kerb1->num_missions == 0 && kerb2->num_missions == 0) {
+        return 0;
+    }
+    else if (kerb1->num_missions != 0 && kerb2->num_missions == 0) {
+        return -1;
+    }
+    else {
+        return compareDates(kerb1->missions[kerb1->num_missions-1]->launch_date, kerb2->missions[kerb2->num_missions-1]->launch_date);
+    }
+}
+
+int compareKerbalLastFlightDesc(const void *kerbal1, const void *kerbal2) {
+    return -compareKerbalLastFlightAsc(kerbal1, kerbal2);
+}
+
+int compareKerbalNumMissionsAsc(const void *kerbal1, const void *kerbal2) {
+    kerbal *kerb1 = (kerbal*) kerbal1;
+    kerbal *kerb2 = (kerbal*) kerbal2;
+    if (kerb1->num_missions > kerb2->num_missions) {
+        return 1;
+    }
+    else if (kerb1->num_missions == kerb2->num_missions) {
+        return 0;
+    }
+    else {
+        return -1;
+    }
+}
+
+int compareKerbalNumMissionsDesc(const void *kerbal1, const void *kerbal2) {
+    return -compareKerbalNumMissionsAsc(kerbal1, kerbal2);
+}

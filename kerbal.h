@@ -15,5 +15,13 @@ void delKerbal(kerbal *kerbals[], kerbal *kerbal, int *next_free);
 int getKerbalFlights(kerbal *kerbal);
 int getKerbalFlightsAtMission(kerbal *kerbal, mission *mission);
 int findKerbalMissionFromPtr(kerbal *kerbal, mission *mission);
+int compareKerbalNameAZ(const void *kerbal1, const void *kerbal2);
+int compareKerbalNameZA(const void *kerbal1, const void *kerbal2);
+int compareKerbalFirstFlightAsc(const void *kerbal1, const void *kerbal2);
+int compareKerbalFirstFlightDesc(const void *kerbal1, const void *kerbal2);
+int compareKerbalLastFlightAsc(const void *kerbal1, const void *kerbal2);
+int compareKerbalLastFlightDesc(const void *kerbal1, const void *kerbal2);
+int compareKerbalNumMissionsAsc(const void *kerbal1, const void *kerbal2);
+int compareKerbalNumMissionsDesc(const void *kerbal1, const void *kerbal2);
 
 #endif

@@ -16,6 +16,7 @@ void viewMissions(mission **missions[], int *next_free);
 void newMission(mission **missions[], orbiter *orbiters[], kerbal *kerbals[], int *next_free_mission, int *next_free_orbiter, int *next_free_kerbal, int *max_size_mission, int *max_size_orbiter, int *max_size_kerbal);
 void editMission(mission **missions[], orbiter *orbiters[], kerbal *kerbals[], int *next_free_mission, int *next_free_orbiter, int *next_free_kerbal, int *max_size_mission, int *max_size_orbiter, int *max_size_kerbal);
 void removeMission(mission **missions[], int *next_free_mission, int *max_size_mission);
+void viewKerbals(kerbal *kerbals[], int *next_free_kerbal);
 const char* getOrdinal(int i);
 int confirmDialogue(char dialogue[DIALOGUE_LIMIT], int def);
 kerbal* inputKerbal(char dialogue[DIALOGUE_LIMIT], kerbal *kerbals[], int *next_free_kerbal, int *max_size_kerbal);
@@ -74,6 +75,9 @@ int main () {
                 break;
             case 4:
                 removeMission(&missions, &next_free_mission, &max_size_mission);
+                break;
+            case 5:
+                viewKerbals(&kerbals, &next_free_kerbal);
                 break;
         }
     }
@@ -453,6 +457,55 @@ void removeMission(mission **missions[], int *next_free_mission, int *max_size_m
     if (confirmDialogue(dialogue, 0)) {
         delMission(*missions, to_delete, next_free_mission);
     }
+}
+
+void viewKerbals(kerbal *kerbals[], int *next_free_kerbal) {
+    kerbal *sorted_kerbals = calloc(*next_free_kerbal, sizeof(kerbal));
+    memcpy(sorted_kerbals, *kerbals, *next_free_kerbal*sizeof(kerbal)); // Get a list of kerbals we can sort without messing up our pointers from before
+    int display_option = intInput("\nKerbal Display Options:\n0. Unordered\n1. Alphabetical (A-Z)\n2. Alphabetical (Z-A)\n3. Date of first flight (most recent last)\n4. Date of first flight(most recent first)\n5. Date of last flight (most recent last)\n6. Date of last flight (most recent first)\n7. Num. Missions (ascending)\n8. Num Missions (descending)\n\nEnter option: ");
+    if (display_option > 8 || display_option < 0) {
+        printf("\tInvalid option!\n");
+        return;
+    }
+    switch (display_option) {
+        case 1:
+            qsort(sorted_kerbals, *next_free_kerbal, sizeof(kerbal), compareKerbalNameAZ);
+            break;
+        case 2:
+            qsort(sorted_kerbals, *next_free_kerbal, sizeof(kerbal), compareKerbalNameZA);
+            break;
+        case 3:
+            qsort(sorted_kerbals, *next_free_kerbal, sizeof(kerbal), compareKerbalFirstFlightAsc);
+            break;
+        case 4:
+            qsort(sorted_kerbals, *next_free_kerbal, sizeof(kerbal), compareKerbalFirstFlightDesc);
+            break;
+        case 5:
+            qsort(sorted_kerbals, *next_free_kerbal, sizeof(kerbal), compareKerbalLastFlightAsc);
+            break;
+        case 6:
+            qsort(sorted_kerbals, *next_free_kerbal, sizeof(kerbal), compareKerbalLastFlightDesc);
+            break;
+        case 7:
+            qsort(sorted_kerbals, *next_free_kerbal, sizeof(kerbal), compareKerbalNumMissionsAsc);
+            break;
+        case 8:
+            qsort(sorted_kerbals, *next_free_kerbal, sizeof(kerbal), compareKerbalNumMissionsDesc);
+            break;
+    }
+    printf("\n     | %-*s | %-*s | %-*s | %-*s\n", KERBAL_NAME_LENGTH + 7, "Kerbal", 12, "Num. Missions", MISSION_NAME_LENGTH, "First Mission", MISSION_NAME_LENGTH, "Last Mission");
+    for (int i = 0; i < *next_free_kerbal; i++) {
+        char out_name[KERBAL_NAME_LENGTH + 7];
+        strcpy(out_name, sorted_kerbals[i].name);
+        strcat(out_name, " Kerman");
+        char out_f_mission[MISSION_NAME_LENGTH] = "-";
+        char out_l_mission[MISSION_NAME_LENGTH] = "-";
+        if (sorted_kerbals[i].num_missions != 0) {
+            strcpy(out_f_mission, sorted_kerbals[i].missions[0]->name);
+            strcpy(out_l_mission, sorted_kerbals[i].missions[sorted_kerbals[i].num_missions-1]->name);
+        }
+        printf("%3d. | %-*s | %-*d  | %-*s | %-*s\n", i, KERBAL_NAME_LENGTH + 7, out_name, 12, sorted_kerbals[i].num_missions, MISSION_NAME_LENGTH, out_f_mission, MISSION_NAME_LENGTH, out_l_mission);
+    } 
 }
 
 void input(char *string,int length) {
